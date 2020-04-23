@@ -6,19 +6,6 @@
 
 #define PULSE_LENGTH 20
 #define PULSE_DELAY 6
-#define COLOR_A_BUTTON ((Color) {255, 0, 0})
-#define COLOR_B_BUTTON ((Color) {0, 0, 255})
-
-//hack for different characters - TODO save in EEPROM
-/*
- * 0. Fox
- * 1. Falco
- * 2. Marth
- * 3. Shiek
- * 4. Puff
- * 5. Peach
- */
-#define CHARACTER_NUM 0
 
 #define COLOR_WHITE ((Color) {255, 255, 255})
 #define COLOR_RED ((Color) {255, 0, 0})
@@ -30,6 +17,7 @@
 #define COLOR_NONE ((Color) {0, 0, 0})
 //edits
 #define COLOR_GREENISH ((Color) {39, 100, 69})
+#define UP_BOOL true
 
 #define max(a,b) \
    ({ __typeof__ (a) _a = (a); \
