@@ -1,5 +1,5 @@
 PROJECTNAME = shinewave
-DEVICE = attiny84
+DEVICE = attiny84r
 PROGRAMMER = usbtiny
 F_CPU = 12000000
 CC = avr-gcc

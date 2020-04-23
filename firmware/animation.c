@@ -50,6 +50,52 @@ static void reset_animation(State *state) {
     state->idle_counter = 0;
 }
 
+//edits
+static void increment_character() {
+    if(CHARACTER_NUM == 6){
+        CHARACTER_NUM = 0;
+    } else {
+        CHARACTER_NUM++;
+    }
+}
+
+/*
+ * 0. Fox
+ * 1. Falco
+ * 2. Marth
+ * 3. Shiek
+ * 4. Puff
+ * 5. Peach
+ */
+
+static Color get_color(){
+    Color col;
+    switch(CHARACTER_NUM){
+        case (0):
+            col = COLOR_RED;
+            break;
+        case (1):
+            col = COLOR_BLUE;
+            break;
+        case (2):
+            col = COLOR_GREEN;
+            break;
+        case (3):
+            col = COLOR_PURPLE;
+            break;
+        case (4):
+            col = COLOR_PINK;
+            break;
+        case (5):
+            col = COLOR_GREENISH;
+            break;
+        default:
+            col = COLOR_WHITE;
+            break;
+    }
+    return col;
+}
+
 static void setup_pulse(State *state) {
     state->action = PULSE;
     state->color1 = COLOR_WHITE;
@@ -106,13 +152,18 @@ void next_frame(State *state, Controller *controller) {
         Direction c_direction = get_c_direction(controller);
         // Test if brightness is being changed
         if((CONTROLLER_D_DOWN(*controller))) {
-            if(state->brightness >= (255 - 32)) {
-                state->brightness = 0;
+            //Edits
+            if(CONTROLLER_Z(*controller)){ //are we editing the character selected
+                increment_character();
             } else {
-                state->brightness += 32;
+                if(state->brightness >= (255 - 32)) {
+                    state->brightness = 0;
+                } else {
+                    state->brightness += 32;
+                }
+                setup_pulse(state);
+                state->interruptable = false;
             }
-            setup_pulse(state);
-            state->interruptable = false;
         // Check if we're wobbling
         } else if (CONTROLLER_A(*controller) && state->wobble_counter >= 7) {
             state->action = WOBBLE;
@@ -153,6 +204,7 @@ void next_frame(State *state, Controller *controller) {
         else if((CONTROLLER_A(*controller) && analog_direction != D_NONE) ||
                 (c_direction != D_NONE)) {
             setup_pulse(state);
+            //Edits should go here
             state->color1 = COLOR_LIGHT_BLUE;
             state->color2 = COLOR_PINK;
             if(analog_direction != D_NONE) {
@@ -180,6 +232,11 @@ void next_frame(State *state, Controller *controller) {
                 state->timer = 0;
                 state->color1.r = min(0xff, state->color1.r + 8);
             }
+            //check for neutral B
+        } else if(CONTROLLER_B(*controller) && (analog_direction == D_NONE)){ //Edits
+            setup_pulse(state);
+            state->color1 = get_color();
+            //todo should we edit the timeout/pulse length/echo?
         }
     }
 
@@ -295,7 +352,7 @@ void next_frame(State *state, Controller *controller) {
             sendPixel(color1);
             sendPixel(color1);
         }
-    } else if(state->action == IDLE) {
+    } else if(state->action == IDLE) { //start the idle color fade
         switch(state->idle_counter) {
             case(0):
                 showColor(apply_brightness((Color) {255, state->timer, 0}, state->brightness));

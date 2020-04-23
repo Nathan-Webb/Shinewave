@@ -10,3 +10,4 @@
 *.out
 *.elf
 *.o
+/cmake-build-debug/*
