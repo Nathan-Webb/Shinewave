@@ -1,5 +1,11 @@
 #include "animation.h"
 
+
+//Edits
+const int characters[] = {1, 2, 4, 5};
+int *requested_characters = 4
+int *char_index = 0;
+
 // Apply brightness to a color. Brightness is between 0 and 255
 static Color apply_brightness(Color color, uint16_t brightness) {
     return (Color) {
@@ -50,43 +56,43 @@ static void reset_animation(State *state) {
     state->idle_counter = 0;
 }
 
-//edits
+//edits - hopefully we dont go out of bounds with this one
 static void increment_character() {
-    if(CHARACTER_NUM == 6){
-        CHARACTER_NUM = 0;
+    if(char_index < requested_characters){
+        char_index++;
     } else {
-        CHARACTER_NUM++;
+        char_index = 0;
     }
 }
 
 /*
- * 0. Fox
- * 1. Falco
- * 2. Marth
- * 3. Shiek
- * 4. Puff
- * 5. Peach
+ * 1. Fox
+ * 2. Falco
+ * 3. Marth
+ * 4. Shiek
+ * 5. Puff
+ * 6. Peach
  */
 
-static Color get_color(){
+static Color get_color_button_b(){
     Color col;
-    switch(CHARACTER_NUM){
-        case (0):
+    switch(characters[char_index]){
+        case (1):
             col = COLOR_RED;
             break;
-        case (1):
+        case (2):
             col = COLOR_BLUE;
             break;
-        case (2):
+        case (3):
             col = COLOR_GREEN;
             break;
-        case (3):
+        case (4):
             col = COLOR_PURPLE;
             break;
-        case (4):
+        case (5):
             col = COLOR_PINK;
             break;
-        case (5):
+        case (6):
             col = COLOR_GREENISH;
             break;
         default:
@@ -197,14 +203,15 @@ void next_frame(State *state, Controller *controller) {
             state->color2 = COLOR_NONE;
         } // Check for Ice blocks(Neutral B)
         else if(CONTROLLER_B(*controller) && analog_direction == D_NONE) {
+            //edits
             setup_pulse(state);
-            state->color1 = COLOR_LIGHT_BLUE;
-            state->color2 = COLOR_NONE;
+            state->color1 = get_color_button_b();
+            //todo should we edit the timeout/pulse length/echo? color 2?
         } // Check for aerials, smashes, or tilts
         else if((CONTROLLER_A(*controller) && analog_direction != D_NONE) ||
                 (c_direction != D_NONE)) {
             setup_pulse(state);
-            //Edits should go here
+            //Edit color for A button here
             state->color1 = COLOR_LIGHT_BLUE;
             state->color2 = COLOR_PINK;
             if(analog_direction != D_NONE) {
@@ -233,10 +240,6 @@ void next_frame(State *state, Controller *controller) {
                 state->color1.r = min(0xff, state->color1.r + 8);
             }
             //check for neutral B
-        } else if(CONTROLLER_B(*controller) && (analog_direction == D_NONE)){ //Edits
-            setup_pulse(state);
-            state->color1 = get_color();
-            //todo should we edit the timeout/pulse length/echo?
         }
     }
 
@@ -353,6 +356,7 @@ void next_frame(State *state, Controller *controller) {
             sendPixel(color1);
         }
     } else if(state->action == IDLE) { //start the idle color fade
+        //Edits for LED breathing here
         switch(state->idle_counter) {
             case(0):
                 showColor(apply_brightness((Color) {255, state->timer, 0}, state->brightness));
@@ -377,7 +381,7 @@ void next_frame(State *state, Controller *controller) {
                 state->idle_counter = 0;
                 break;
         }
-        if(state->timer == 0xff) {
+        if(state->timer == 0xff) { //255
             state->idle_counter = state->idle_counter + 1;
         }
     } else if(state->action == BLANK) {
