@@ -16,7 +16,7 @@ In Arch, the toolchain can be set up with the following command.
 
 Then, download the repository to your local machine
 
-	git clone git@github.com:GGreenwood/Shinewave.git
+	git clone git@github.com:Nathan-Webb/Shinewave.git
     cd Shinewave
     git checkout v0.2-usb
 
