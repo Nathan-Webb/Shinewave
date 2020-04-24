@@ -1,0 +1,34 @@
+/*
+ * 0. Fox/Falco
+ * 1. Falcon/Marth
+ * 2. Shiek
+ * 3. Puff
+ * 4. General
+ */
+
+
+spacies:
+dair up air flash red (DONE)
+
+
+
+falco / marth:
+f-air and f-smash white + grey or light blue (DONE)
+dair up air flash red (DONE)
+
+
+
+shiek:
+down b flash white (DONE)
+fair / bair flash yellow
+up b flash red (DONE)
+neutral b flash white (DONE)
+
+puff:
+flash pink with down b (DONE)
+back air and fair flash red (DONE)
+
+everyone else:
+c stick doesn't do colors abxyz does colors
+
+

@@ -59,7 +59,6 @@ static void reset_animation(State *state) {
  * 4. General
  */
 
-
 static void setup_pulse(State *state) {
     state->action = PULSE;
     state->color1 = COLOR_WHITE;
@@ -116,7 +115,6 @@ void next_frame(State *state, Controller *controller) {
         Direction c_direction = get_c_direction(controller);
 
         if(CONTROLLER_D_DOWN(*controller)) { // Test if brightness is being changed
-            //Edits
             if(state->brightness >= (255 - 32)) {
                 state->brightness = 0;
             } else {
@@ -125,21 +123,52 @@ void next_frame(State *state, Controller *controller) {
             setup_pulse(state);
             state->interruptable = false;
 
-        }
-        else if (CONTROLLER_D_LEFT(*controller)) { //Decrement character
-           if(CHARACTER_NUM != 0) { //make sure we haven't reached zero
-               CHARACTER_NUM--; //todo write new value to EEPROM
-           }
-            setup_pulse(state);
-            state->interruptable = false;
+        } else if (CONTROLLER_D_LEFT(*controller)) { //Decrement character
+            if(CHARACTER_NUM != 0) { //make sure we haven't reached zero
+                CHARACTER_NUM--; //todo write new value to EEPROM
+                setup_pulse(state);
+                state->interruptable = false;
+            } else { //flash red - reached end of list
+                setup_pulse(state);
+                state->color1 = COLOR_RED;
+                state->interruptable = false;
+            }
+
         }
         else if (CONTROLLER_D_RIGHT(*controller)) { //Increment character
             if(CHARACTER_NUM != 4){ //make sure we aren't go out of bounds
                 CHARACTER_NUM++; //todo write new value to EEPROM
+                setup_pulse(state);
+                state->interruptable = false;
+            } else { //flash red - reached end of list
+                setup_pulse(state);
+                state->color1 = COLOR_RED;
+                state->interruptable = false;
             }
-            setup_pulse(state);
-            state->interruptable = false;
+        }
+        else if (CONTROLLER_A(*controller) && (analog_direction == D_LEFT || analog_direction == D_RIGHT)){ //f air or f smash
+            if(CHARACTER_NUM == 1){ //falco/marth
+                setup_pulse(state);
+                state->color1 = COLOR_BLUE; //todo actually check if the color is good
+                state->color2 = COLOR_WHITE;
+            } else if (CHARACTER_NUM == 2){ //shiek
+                setup_pulse(state);
+                state->color1 = COLOR_YELLOW;
+            }
+            else if(CHARACTER_NUM == 3){ //puff
+                setup_pulse(state);
+                state->color1 = COLOR_RED;
+            }
 
+        } else if (CONTROLLER_A(*controller) && (analog_direction == D_UP || analog_direction == D_DOWN)) { //down air or up air
+            if(CHARACTER_NUM == 0 ){ //spacies
+                setup_pulse(state);
+                state->color1 = COLOR_RED;
+            } else if(CHARACTER_NUM == 1){ //falco/marth
+                setup_pulse(state);
+                state->color1 = COLOR_RED;
+
+            }
 
         }
         else if (CONTROLLER_A(*controller) && state->wobble_counter >= 7) { // Check if we're wobbling
@@ -158,6 +187,25 @@ void next_frame(State *state, Controller *controller) {
             if(CHARACTER_NUM == 3){ //down b with puff
                 setup_pulse(state);
                 state->color1 = COLOR_PINK;
+            } else if (CHARACTER_NUM == 2){ //shiek
+                setup_pulse(state);
+                state->color1 = COLOR_WHITE;
+
+            } else if (CHARACTER_NUM == 0){ //spacies using shine
+                state->action = BLIZZARD;
+                state->color1 = COLOR_WHITE;
+                state->color2 = COLOR_BLUE;
+                state->dir= D_NONE;
+                state->timer = 0;
+                state->interruptable = false;
+                state->timeout = 90;
+                state->pulse_length = 12;
+                state->echo = false;
+            }
+        } else if (CONTROLLER_B(*controller) && analog_direction == D_UP) {// Up-b
+            if(CHARACTER_NUM == 2){
+                setup_pulse(state);
+                state->color1 = COLOR_RED;
             }
         }
         else if(CONTROLLER_X(*controller) || CONTROLLER_Y(*controller)) { //X or Y
@@ -171,24 +219,27 @@ void next_frame(State *state, Controller *controller) {
             state->color2 = COLOR_NONE;
         }
         else if(CONTROLLER_B(*controller) && analog_direction == D_NONE) { // Neutral B
+            if(CHARACTER_NUM == 2){ //shiek
+                setup_pulse(state);
+                state->color1 = COLOR_WHITE;
+            }
 
         }
         else if((CONTROLLER_A(*controller) && analog_direction != D_NONE) ||
                 (c_direction != D_NONE)) { // Check for aerials, smashes, or tilts
-            setup_pulse(state);
 
-            //Edit color for A button here
-
-            state->color1 = COLOR_LIGHT_BLUE;
-            state->color2 = COLOR_PINK;
-            if(analog_direction != D_NONE) {
-                state->dir= analog_direction;
-            } else {
-                state->dir= c_direction;
+            if(CHARACTER_NUM == 5){
+                setup_pulse(state);
+                state->color1 = COLOR_RED;
+                if(analog_direction != D_NONE) {
+                    state->dir= analog_direction;
+                } else {
+                    state->dir= c_direction;
+                }
+                state->timeout = 40;
+                state->pulse_length = 20;
+                state->echo = true;
             }
-            state->timeout = 40;
-            state->pulse_length = 20;
-            state->echo = true;
         }
         else if(CONTROLLER_B(*controller) && (analog_direction == D_LEFT || analog_direction == D_RIGHT)){ // Check for Side-B
             // Check if this is the first Side-B

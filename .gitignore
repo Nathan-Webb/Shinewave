@@ -11,4 +11,3 @@
 *.elf
 *.o
 /cmake-build-debug/*
-todo.txt

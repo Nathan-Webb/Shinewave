@@ -29,6 +29,8 @@
 #define COLOR_NONE ((Color) {0, 0, 0})
 //edits
 #define COLOR_GREENISH ((Color) {39, 100, 69})
+#define COLOR_YELLOW ((Color) {255, 255, 0})
+
 
 #define max(a,b) \
    ({ __typeof__ (a) _a = (a); \
