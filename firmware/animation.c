@@ -1,11 +1,5 @@
 #include "animation.h"
 
-
-//Edits
-const int characters[] = {1, 2, 4, 5};
-int *requested_characters = 4
-int *char_index = 0;
-
 // Apply brightness to a color. Brightness is between 0 and 255
 static Color apply_brightness(Color color, uint16_t brightness) {
     return (Color) {
@@ -56,51 +50,15 @@ static void reset_animation(State *state) {
     state->idle_counter = 0;
 }
 
-//edits - hopefully we dont go out of bounds with this one
-static void increment_character() {
-    if(char_index < requested_characters){
-        char_index++;
-    } else {
-        char_index = 0;
-    }
-}
 
 /*
- * 1. Fox
- * 2. Falco
- * 3. Marth
- * 4. Shiek
- * 5. Puff
- * 6. Peach
+ * 0. Fox/Falco
+ * 1. Falcon/Marth
+ * 2. Shiek
+ * 3. Puff
+ * 4. General
  */
 
-static Color get_color_button_b(){
-    Color col;
-    switch(characters[char_index]){
-        case (1):
-            col = COLOR_RED;
-            break;
-        case (2):
-            col = COLOR_BLUE;
-            break;
-        case (3):
-            col = COLOR_GREEN;
-            break;
-        case (4):
-            col = COLOR_PURPLE;
-            break;
-        case (5):
-            col = COLOR_PINK;
-            break;
-        case (6):
-            col = COLOR_GREENISH;
-            break;
-        default:
-            col = COLOR_WHITE;
-            break;
-    }
-    return col;
-}
 
 static void setup_pulse(State *state) {
     state->action = PULSE;
@@ -153,25 +111,38 @@ void next_frame(State *state, Controller *controller) {
     // If we're in Side-B, make sure B is released before repeating
     if((!state->interruptable) && (state->action == SIDEB) && (!CONTROLLER_B(*controller))) {
         state->interruptable = true;
-    } // If the state can be interrupted, check all of the possible outcomes
-    else if(state->interruptable) {
+    }
+    else if(state->interruptable) { // If the state can be interrupted, check all of the possible outcomes
         Direction c_direction = get_c_direction(controller);
-        // Test if brightness is being changed
-        if((CONTROLLER_D_DOWN(*controller))) {
+
+        if(CONTROLLER_D_DOWN(*controller)) { // Test if brightness is being changed
             //Edits
-            if(CONTROLLER_Z(*controller)){ //are we editing the character selected
-                increment_character();
+            if(state->brightness >= (255 - 32)) {
+                state->brightness = 0;
             } else {
-                if(state->brightness >= (255 - 32)) {
-                    state->brightness = 0;
-                } else {
-                    state->brightness += 32;
-                }
-                setup_pulse(state);
-                state->interruptable = false;
+                state->brightness += 32;
             }
-        // Check if we're wobbling
-        } else if (CONTROLLER_A(*controller) && state->wobble_counter >= 7) {
+            setup_pulse(state);
+            state->interruptable = false;
+
+        }
+        else if (CONTROLLER_D_LEFT(*controller)) { //Decrement character
+           if(CHARACTER_NUM != 0) { //make sure we haven't reached zero
+               CHARACTER_NUM--; //todo write new value to EEPROM
+           }
+            setup_pulse(state);
+            state->interruptable = false;
+        }
+        else if (CONTROLLER_D_RIGHT(*controller)) { //Increment character
+            if(CHARACTER_NUM != 4){ //make sure we aren't go out of bounds
+                CHARACTER_NUM++; //todo write new value to EEPROM
+            }
+            setup_pulse(state);
+            state->interruptable = false;
+
+
+        }
+        else if (CONTROLLER_A(*controller) && state->wobble_counter >= 7) { // Check if we're wobbling
             state->action = WOBBLE;
             state->color1 = COLOR_LIGHT_BLUE;
             state->color2 = COLOR_PINK;
@@ -181,37 +152,33 @@ void next_frame(State *state, Controller *controller) {
             state->timeout = 20;
             state->pulse_length = 20;
             state->echo = false;
-        } // Check for Blizzard(Down-B)
-        else if(CONTROLLER_B(*controller) && analog_direction == D_DOWN) {
-            state->action = BLIZZARD;
-            state->color1 = COLOR_WHITE;
-            state->color2 = COLOR_BLUE;
-            state->dir= D_NONE;
-            state->timer = 0;
-            state->interruptable = false;
-            state->timeout = 90;
-            state->pulse_length = 12;
-            state->echo = false;
-        } // Check for jump(X or Y)
-        else if(CONTROLLER_X(*controller) || CONTROLLER_Y(*controller)) {
+        }
+
+        else if(CONTROLLER_B(*controller) && analog_direction == D_DOWN) { //Down-B
+            if(CHARACTER_NUM == 3){ //down b with puff
+                setup_pulse(state);
+                state->color1 = COLOR_PINK;
+            }
+        }
+        else if(CONTROLLER_X(*controller) || CONTROLLER_Y(*controller)) { //X or Y
             setup_pulse(state);
-        } // Check for grab(Z, or Analog L/R and A)
-        else if(CONTROLLER_Z(*controller) || (CONTROLLER_A(*controller) && 
-                (ANALOG_L(*controller) || ANALOG_R(*controller)))) {
+
+        }
+        else if(CONTROLLER_Z(*controller) || (CONTROLLER_A(*controller) &&
+                (ANALOG_L(*controller) || ANALOG_R(*controller)))) { //grab(Z, or Analog L/R and A)
             setup_pulse(state);
             state->color1 = COLOR_PURPLE;
             state->color2 = COLOR_NONE;
-        } // Check for Ice blocks(Neutral B)
-        else if(CONTROLLER_B(*controller) && analog_direction == D_NONE) {
-            //edits
-            setup_pulse(state);
-            state->color1 = get_color_button_b();
-            //todo should we edit the timeout/pulse length/echo? color 2?
-        } // Check for aerials, smashes, or tilts
+        }
+        else if(CONTROLLER_B(*controller) && analog_direction == D_NONE) { // Neutral B
+
+        }
         else if((CONTROLLER_A(*controller) && analog_direction != D_NONE) ||
-                (c_direction != D_NONE)) {
+                (c_direction != D_NONE)) { // Check for aerials, smashes, or tilts
             setup_pulse(state);
+
             //Edit color for A button here
+
             state->color1 = COLOR_LIGHT_BLUE;
             state->color2 = COLOR_PINK;
             if(analog_direction != D_NONE) {
@@ -222,8 +189,8 @@ void next_frame(State *state, Controller *controller) {
             state->timeout = 40;
             state->pulse_length = 20;
             state->echo = true;
-        } // Check for Side-B
-        else if(CONTROLLER_B(*controller) && (analog_direction == D_LEFT || analog_direction == D_RIGHT)){
+        }
+        else if(CONTROLLER_B(*controller) && (analog_direction == D_LEFT || analog_direction == D_RIGHT)){ // Check for Side-B
             // Check if this is the first Side-B
             if(state->action != SIDEB) {
                 state->action = SIDEB;
@@ -356,7 +323,6 @@ void next_frame(State *state, Controller *controller) {
             sendPixel(color1);
         }
     } else if(state->action == IDLE) { //start the idle color fade
-        //Edits for LED breathing here
         switch(state->idle_counter) {
             case(0):
                 showColor(apply_brightness((Color) {255, state->timer, 0}, state->brightness));

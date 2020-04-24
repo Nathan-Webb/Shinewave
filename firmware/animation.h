@@ -11,12 +11,11 @@
 
 //hack for different characters - TODO save in EEPROM
 /*
- * 0. Fox
- * 1. Falco
- * 2. Marth
- * 3. Shiek
- * 4. Puff
- * 5. Peach
+ * 0. Fox/Falco
+ * 1. Falcon/Marth
+ * 2. Shiek
+ * 3. Puff
+ * 4. General
  */
 #define CHARACTER_NUM 0
 
