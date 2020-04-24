@@ -16,8 +16,10 @@
 #define COLOR_PURPLE ((Color) {120, 32, 180})
 #define COLOR_NONE ((Color) {0, 0, 0})
 //edits
+#define COLOR_YELLOW ((Color) {255, 255, 0})
 #define COLOR_GREENISH ((Color) {39, 100, 69})
 #define UP_BOOL true
+#define COLOR_INT 0
 
 #define max(a,b) \
    ({ __typeof__ (a) _a = (a); \
@@ -30,7 +32,7 @@
 
 typedef enum {D_UP, D_DOWN, D_LEFT, D_RIGHT, D_NONE} Direction;
 
-typedef enum {IDLE, BLANK, PULSE, BLIZZARD, SIDEB, WOBBLE} Action;
+typedef enum {SOLID, BREATHE, PULSE} Action;
 
 typedef struct {
     Action action;
@@ -42,9 +44,6 @@ typedef struct {
     uint8_t timeout;
     uint8_t pulse_length;
     bool echo;
-    uint8_t wobble_timer;
-    uint8_t wobble_counter;
-    uint8_t idle_counter;
     uint16_t brightness;
 } State;
 
