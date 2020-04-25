@@ -15,7 +15,7 @@ dair up air flash red (DONE)
 falco / marth:
 f-air and f-smash white + grey or light blue (DONE)
 dair up air flash red (DONE)
-
+z should flash blue
 
 
 shiek:
@@ -30,5 +30,13 @@ back air and fair flash red (DONE)
 
 everyone else:
 c stick doesn't do colors abxyz does colors
+
+
+flash a specific color when toggling between characters. (DONE)
+Profile 1 (Fox Falco) White (Due to jacket color)
+Profile 2 Red (both falcon and Marth have a red skin. A dumb reason but it fits)
+Profile 3 yellow (shiek = triforce)
+Profile 4 pink (puff lmao)
+Profile 5 Rainbow since its the entire cast (FFFFFFFFFFFFFFFFFFFFF....)
 
 

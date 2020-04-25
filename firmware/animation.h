@@ -30,6 +30,7 @@
 //edits
 #define COLOR_GREENISH ((Color) {39, 100, 69})
 #define COLOR_YELLOW ((Color) {255, 255, 0})
+#define COLOR_FLOP ((Color) {1, 1, 1})
 
 
 #define max(a,b) \

@@ -71,6 +71,24 @@ static void setup_pulse(State *state) {
     state->echo = false;
 }
 
+static Color get_config_color(){
+    switch(CHARACTER_NUM){
+        case (0): //spacies
+            return COLOR_WHITE;
+        case (1):
+            return COLOR_RED;
+        case (2):
+            return COLOR_YELLOW;
+        case (3):
+            return COLOR_PINK;
+        case (4):
+            return COLOR_GREEN; //todo change to double flash soontm
+        default:
+            return COLOR_NONE;
+
+    }
+}
+
 State *init_animation(State *state) {
     reset_animation(state);
     state->brightness = 255;
@@ -126,25 +144,19 @@ void next_frame(State *state, Controller *controller) {
         } else if (CONTROLLER_D_LEFT(*controller)) { //Decrement character
             if(CHARACTER_NUM != 0) { //make sure we haven't reached zero
                 CHARACTER_NUM--; //todo write new value to EEPROM
-                setup_pulse(state);
-                state->interruptable = false;
-            } else { //flash red - reached end of list
-                setup_pulse(state);
-                state->color1 = COLOR_RED;
-                state->interruptable = false;
             }
-
+            setup_pulse(state);
+            state->color1 = get_config_color();
+            state->interruptable = false;
         }
         else if (CONTROLLER_D_RIGHT(*controller)) { //Increment character
             if(CHARACTER_NUM != 4){ //make sure we aren't go out of bounds
                 CHARACTER_NUM++; //todo write new value to EEPROM
-                setup_pulse(state);
-                state->interruptable = false;
-            } else { //flash red - reached end of list
-                setup_pulse(state);
-                state->color1 = COLOR_RED;
-                state->interruptable = false;
             }
+
+            setup_pulse(state);
+            state->color1 = get_config_color();
+            state->interruptable = false;
         }
         else if (CONTROLLER_A(*controller) && (analog_direction == D_LEFT || analog_direction == D_RIGHT)){ //f air or f smash
             if(CHARACTER_NUM == 1){ //falco/marth
