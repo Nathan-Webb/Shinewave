@@ -1,5 +1,6 @@
 # Overview
 Shinewave is a mod for the Nintendo GameCube controller that adds USB joystick functionality, along with LED lighting.
+[![forthebadge](https://forthebadge.com/images/badges/as-seen-on-tv.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/contains-technical-debt.svg)](https://forthebadge.com)
 
 ![Controller](/images/controller.jpg)
 
